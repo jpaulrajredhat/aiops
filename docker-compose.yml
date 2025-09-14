@@ -59,8 +59,29 @@ services:
       - "4317:4317"  # OTLP gRPC
       - "4318:4318"  # OTLP HTTP
       - "55681:55681" # OpenCensus (optional)
+      - "9090:9090"  # Prometheus exporter
     command:
       ["--config=/etc/otelcol-contrib/config.yaml"]
+    networks:
+      - anomaly-network
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - "9091:9090" # Prometheus UI
+    networks:
+      - anomaly-network
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    ports:
+      - "3000:3000" # Grafana UI
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
     networks:
       - anomaly-network
 
