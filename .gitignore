@@ -7,3 +7,4 @@
 .vscode
 /anomaly_isolation_forest/logs/
 anomaly_isolation_forest/.DS_Store
+**/__pycache__/
