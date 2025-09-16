@@ -5,6 +5,8 @@
 
 This project implements anomaly detection using the Isolation Forest model and integrates LLaMA with FAISS for Retrieval-Augmented Generation (RAG) to create cases based on detected anomalies. The solution enables automated anomaly detection and root cause analysis using AI-driven observability.
 
+[aiops.pdf](https://github.com/user-attachments/files/22355492/aiops.pdf)
+
 # Features
 
 Anomaly Detection: Uses Isolation Forest for unsupervised anomaly detection.
