@@ -60,8 +60,18 @@ async def process_anomaly(anomaly_data: dict ):
         response = analyze_anomaly_with_llm(anomaly_data)
         action_req = os.getenv("ACTION_REQ")
         print("scale_pod--begin")
+        
+        logger.info(f"Creating case for Anamoly: {anomaly_data} ")
+        
+        logger.info(f"LLM content Begin---------------***********__________________________________")
 
-        create_case(response,anomaly_data)
+        logger.info(f"Case content from LLM: {response} ")
+        
+        logger.info(f"LLM content End---------------***********__________________________________")
+
+
+
+        # create_case(response,anomaly_data)
         print("scale_pod--end")
         if action_req == 'Y':
             print("scale_pod")

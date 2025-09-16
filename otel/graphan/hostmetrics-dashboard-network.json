@@ -1,0 +1,123 @@
+{
+  "title": "Host Metrics (OTEL Collector)",
+  "timezone": "browser",
+  "schemaVersion": 37,
+  "version": 3,
+  "panels": [
+    {
+      "type": "timeseries",
+      "title": "CPU Utilization %",
+      "targets": [
+        {
+          "expr": "100 * (1 - avg by (cpu)(rate(system_cpu_time_seconds_total{state=\"idle\"}[1m])))",
+          "legendFormat": "CPU {{cpu}}",
+          "interval": ""
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 9,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      }
+    },
+    {
+      "type": "timeseries",
+      "title": "Memory Usage %",
+      "targets": [
+        {
+          "expr": "100 * (system_memory_used_bytes / system_memory_total_bytes)",
+          "legendFormat": "Memory Usage",
+          "interval": ""
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 9,
+        "w": 24,
+        "x": 0,
+        "y": 9
+      }
+    },
+    {
+      "type": "timeseries",
+      "title": "Disk Usage %",
+      "targets": [
+        {
+          "expr": "100 * (system_filesystem_used_bytes / system_filesystem_total_bytes)",
+          "legendFormat": "{{mountpoint}}",
+          "interval": ""
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 9,
+        "w": 24,
+        "x": 0,
+        "y": 18
+      }
+    },
+    {
+      "type": "timeseries",
+      "title": "Network RX KB/s",
+      "targets": [
+        {
+          "expr": "rate(system_network_io_bytes_total{direction=\"receive\"}[1m]) / 1024",
+          "legendFormat": "{{interface}}",
+          "interval": ""
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "KBs"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 9,
+        "w": 12,
+        "x": 0,
+        "y": 27
+      }
+    },
+    {
+      "type": "timeseries",
+      "title": "Network TX KB/s",
+      "targets": [
+        {
+          "expr": "rate(system_network_io_bytes_total{direction=\"transmit\"}[1m]) / 1024",
+          "legendFormat": "{{interface}}",
+          "interval": ""
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "KBs"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 9,
+        "w": 12,
+        "x": 12,
+        "y": 27
+      }
+    }
+  ]
+}

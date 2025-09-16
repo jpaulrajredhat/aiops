@@ -1,0 +1,92 @@
+{
+  "title": "macOS Host Metrics",
+  "uid": "mac-host-metrics",
+  "version": 1,
+  "schemaVersion": 37,
+  "templating": {
+    "list": [
+      {
+        "name": "host",
+        "type": "query",
+        "label": "Host",
+        "datasource": "Prometheus",
+        "query": "label_values(system_cpu_time_seconds_total, host)",
+        "refresh": 1,
+        "includeAll": true,
+        "multi": true
+      },
+      {
+        "name": "disk",
+        "type": "query",
+        "label": "Disk Device",
+        "datasource": "Prometheus",
+        "query": "label_values(system_filesystem_used_bytes{host=\"$host\"}, device)",
+        "refresh": 1,
+        "includeAll": true,
+        "multi": true
+      },
+      {
+        "name": "netif",
+        "type": "query",
+        "label": "Network Interface",
+        "datasource": "Prometheus",
+        "query": "label_values(system_network_io_bytes_total{host=\"$host\"}, interface)",
+        "refresh": 1,
+        "includeAll": true,
+        "multi": true
+      }
+    ]
+  },
+  "panels": [
+    {
+      "title": "CPU Utilization %",
+      "type": "graph",
+      "targets": [
+        {
+          "expr": "100 * (1 - avg by(cpu) (rate(system_cpu_time_seconds_total{host=\"$host\", state=\"idle\"}[5s])))",
+          "legendFormat": "CPU {{cpu}}"
+        }
+      ]
+    },
+    {
+      "title": "Memory Usage %",
+      "type": "graph",
+      "targets": [
+        {
+          "expr": "100 * (1 - (system_memory_free_bytes{host=\"$host\"} / system_memory_total_bytes{host=\"$host\"}))",
+          "legendFormat": "Memory"
+        }
+      ]
+    },
+    {
+      "title": "Disk Usage %",
+      "type": "graph",
+      "targets": [
+        {
+          "expr": "100 * (system_filesystem_used_bytes{host=\"$host\", device=\"$disk\"} / system_filesystem_size_bytes{host=\"$host\", device=\"$disk\"})",
+          "legendFormat": "{{device}}"
+        }
+      ]
+    },
+    {
+      "title": "Network Receive KB/s",
+      "type": "graph",
+      "targets": [
+        {
+          "expr": "rate(system_network_io_bytes_total{host=\"$host\", interface=\"$netif\", direction=\"receive\"}[5s]) / 1024",
+          "legendFormat": "{{interface}} RX"
+        }
+      ]
+    },
+    {
+      "title": "Network Transmit KB/s",
+      "type": "graph",
+      "targets": [
+        {
+          "expr": "rate(system_network_io_bytes_total{host=\"$host\", interface=\"$netif\", direction=\"transmit\"}[5s]) / 1024",
+          "legendFormat": "{{interface}} TX"
+        }
+      ]
+    }
+  ]
+}

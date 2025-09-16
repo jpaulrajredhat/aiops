@@ -1,21 +1,61 @@
 receivers:
-  otlp:
-    protocols:
-      http:
-        endpoint: 0.0.0.0:4318
+  hostmetrics:
+    root_path: /host # <— important on Podman/macOS
+    collection_interval: 5s
+    scrapers:
+      cpu: {} # no keys here
+      memory: {}
+      filesystem: {}
+      disk: {}
+      load: {}
+      network: {}
+
+processors:
+  resource:
+    attributes:
+    - key: host
+      value: "Edge-GreatJey-macbook-pro" # Or use env var
+      # value: "${HOSTNAME}"
+      action: upsert
+  attributes:
+    actions:
+    - action: insert
+      key: host
+      from_attribute: host
+  # filter_labels:
+  #   actions:
+  #   - key: otel_scope_name
+  #     action: delete
+  #   - key: otel_scope_schema_url
+  #     action: delete
+  #   - key: otel_scope_version
+  #     action: delete
+  #   - key: otelcol.component.id
+  #     action: delete
+  #   - key: otelcol.component.kind
+  #     action: delete
+  #   - key: otelcol.signal
+  #     action: delete
+
+  batch: {}
 
 exporters:
+  prometheus:
+    endpoint: "0.0.0.0:9464"
+    # in newer collector versions you can also use:
+    resource_to_telemetry_conversion:
+      enabled: true
+  otlp:
+    endpoint: "edge-exporter:50051"
+    tls:
+      insecure: true
+
   debug:
-    verbosity: detailed
+    verbosity: detailed # See full telemetry data structure
 
 service:
   pipelines:
-    # traces:
-    #   receivers: [ otlp ]
-    #   exporters: [ debug ]
     metrics:
-      receivers: [ otlp ]
-      exporters: [ debug ]
-    # logs:
-    #   receivers: [ otlp ]
-    #   exporters: [ debug ]
+      receivers: [ hostmetrics ]
+      processors: [ resource, batch ]
+      exporters: [ prometheus, debug, otlp ]

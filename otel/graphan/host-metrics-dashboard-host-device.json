@@ -1,0 +1,102 @@
+{
+  "annotations": { "list": [] },
+  "editable": true,
+  "gnetId": null,
+  "graphTooltip": 0,
+  "id": null,
+  "links": [],
+  "panels": [
+    {
+      "datasource": "Prometheus",
+      "fieldConfig": {"defaults": {}, "overrides": []},
+      "gridPos": {"h": 8, "w": 12, "x": 0, "y": 0},
+      "id": 1,
+      "title": "CPU Utilization %",
+      "type": "gauge",
+      "targets": [
+        {
+          "expr": "100 * (1 - avg by(cpu) (rate(system_cpu_time_seconds_total{state='idle',host=\"$host\"}[5s])))",
+          "legendFormat": "{{cpu}}"
+        }
+      ]
+    },
+    {
+      "datasource": "Prometheus",
+      "fieldConfig": {"defaults": {}, "overrides": []},
+      "gridPos": {"h": 8, "w": 12, "x": 12, "y": 0},
+      "id": 2,
+      "title": "Memory Usage %",
+      "type": "gauge",
+      "targets": [
+        {
+          "expr": "100 * (system_memory_used_bytes{host=\"$host\"} / system_memory_total_bytes{host=\"$host\"})",
+          "legendFormat": "Memory"
+        }
+      ]
+    },
+    {
+      "datasource": "Prometheus",
+      "fieldConfig": {"defaults": {}, "overrides": []},
+      "gridPos": {"h": 8, "w": 12, "x": 0, "y": 8},
+      "id": 3,
+      "title": "Disk Usage %",
+      "type": "gauge",
+      "targets": [
+        {
+          "expr": "100 * (system_filesystem_used_bytes{host=\"$host\", device=\"$device\"} / system_filesystem_size_bytes{host=\"$host\", device=\"$device\"})",
+          "legendFormat": "{{device}}"
+        }
+      ]
+    },
+    {
+      "datasource": "Prometheus",
+      "fieldConfig": {"defaults": {}, "overrides": []},
+      "gridPos": {"h": 8, "w": 12, "x": 12, "y": 8},
+      "id": 4,
+      "title": "Network Traffic KB/s",
+      "type": "graph",
+      "targets": [
+        {
+          "expr": "rate(system_network_io_bytes_total{host=\"$host\", interface=\"$device\", direction=\"receive\"}[5s])/1024",
+          "legendFormat": "{{interface}} RX"
+        },
+        {
+          "expr": "rate(system_network_io_bytes_total{host=\"$host\", interface=\"$device\", direction=\"transmit\"}[5s])/1024",
+          "legendFormat": "{{interface}} TX"
+        }
+      ]
+    }
+  ],
+  "templating": {
+    "list": [
+      {
+        "name": "host",
+        "type": "query",
+        "label": "Host",
+        "datasource": "Prometheus",
+        "query": "label_values(system_cpu_time_seconds_total, host)",
+        "multi": true,
+        "includeAll": true,
+        "allValue": ".*"
+      },
+      {
+        "name": "device",
+        "type": "query",
+        "label": "Device / Interface",
+        "datasource": "Prometheus",
+        "query": "label_values(system_filesystem_used_bytes{host=\"$host\"}, device)",
+        "multi": true,
+        "includeAll": true,
+        "allValue": ".*"
+      }
+    ]
+  },
+  "schemaVersion": 36,
+  "style": "dark",
+  "tags": ["hostmetrics", "otel", "macos", "multi-host"],
+  "time": {"from": "now-5m", "to": "now"},
+  "timepicker": {},
+  "timezone": "",
+  "title": "Host Metrics Multi-Host Dashboard",
+  "version": 1
+}
