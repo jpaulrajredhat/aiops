@@ -1,7 +1,8 @@
 from fastapi import FastAPI, HTTPException
 from app.models.models import AnomalyData
 from app.services.ocp_scaler import scale_pod,create_case
-from app.services.rag_pipeline import analyze_anomaly_with_llm,get_vector_store, vector_store
+# from app.services.rag_pipeline import analyze_anomaly_with_llm,get_vector_store, vector_store
+from app.services.rag_pipeline import analyze_anomaly_with_llm,get_vector_store
 from datetime import datetime
 import os
 from typing import Dict
@@ -11,6 +12,8 @@ import json
 import psutil, os
 from app.services.consumer import consume_anomalies
 import logging
+from fastapi.responses import HTMLResponse
+from app.services.consumer import consume_anomalies , processed_anomalies
 
 
 app = FastAPI()
@@ -47,9 +50,21 @@ async def startup_event():
 def health_check():
     return {"status": "ok", "vector_store_initialized": vector_store is not None}
 
-@app.get("/")
+# @app.get("/")
+# async def root():
+#     return {"message": "LLM Service is running"}
+
+@app.get("/", response_class=HTMLResponse)
 async def root():
-    return {"message": "LLM Service is running"}
+    return """
+    <html>
+        <body>
+            <h2>LLM Service is running </h2>
+            <a href="/docs">Go to Swagger UI</a>
+        </body>
+    </html>
+    """
+
 @app.post("/process-anomaly")
 async def process_anomaly(anomaly_data: dict ):
     try:
@@ -81,28 +96,36 @@ async def process_anomaly(anomaly_data: dict ):
         return {"resolution": response}
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"An error occurred: {e}")
-@app.post("/anomaly-detected")
-async def handle_anomaly(anomaly: AnomalyData):
-    anomaly_dict = anomaly.model_dump()
+# @app.post("/anomaly-detected")
+# async def handle_anomaly(anomaly: AnomalyData):
+#     anomaly_dict = anomaly.model_dump()
     
-    key = save_anomaly(anomaly_dict)
+#     key = save_anomaly(anomaly_dict)
     
 
-    # Example: Scale pod if CPU anomaly is detected
-    # if anomaly_dict.anomaly_type == "high_cpu_usage":
-    # if anomaly_dict["anomaly_type"] == "high_cpu_usage":  
+#     # Example: Scale pod if CPU anomaly is detected
+#     # if anomaly_dict.anomaly_type == "high_cpu_usage":
+#     # if anomaly_dict["anomaly_type"] == "high_cpu_usage":  
 
-        # namespace = "default"
-        # deployment_name = "my-app-deployment"
-        # scale_pod(namespace, deployment_name, replicas=2)
-    return anomaly_dict
+#         # namespace = "default"
+#         # deployment_name = "my-app-deployment"
+#         # scale_pod(namespace, deployment_name, replicas=2)
+#     return anomaly_dict
    
-@app.post("/anomaly/{timestamp}")
-def fetch_anomaly(timestamp: str):
-    key = f"anomaly:{timestamp}"
-    data = get_anomaly(key)
-    if data:
-        return data
-    raise HTTPException(status_code=404, detail="Anomaly not found")
+# @app.post("/anomaly/{timestamp}")
+# def fetch_anomaly(timestamp: str):
+#     key = f"anomaly:{timestamp}"
+#     data = get_anomaly(key)
+#     if data:
+#         return data
+#     raise HTTPException(status_code=404, detail="Anomaly not found")
 
 
+
+# -------------------------------------
+# API to fetch all processed anomalies
+# -------------------------------------
+@app.get("/get-processed-anomalies")
+def get_processed_anomalies():
+    response = processed_anomalies()
+    return response

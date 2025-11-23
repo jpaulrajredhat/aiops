@@ -34,7 +34,9 @@ ENV PYTHONPATH=/app
 
 # Command to run the app
 # CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8001", "--reload"]
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8001" ,"--reload" , "--log-level", "debug", "--access-log" ]
+# CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8001" ,"--reload" , "--log-level", "debug", "--access-log" ]
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8001" , "--log-level", "debug", "--access-log" ]
 
 # Production server (no --reload)
 # CMD ["gunicorn", "app.main:app", "-k", "uvicorn.workers.UvicornWorker", "--bind", "0.0.0.0:8001", "--workers", "2", "--timeout", "120"]
+# 

@@ -17,9 +17,61 @@ services:
       - OPENSHIFT_TOKEN=<token>
       - ACTION_REQ=N
       - LLM_INFERENCE_QUEUE=llm_inference_queue
+    # volumes:
+    #   - ./app:/usr/local/lib/python3.11/site-packages
+
     networks:
       - anomaly-network
-  
+  hive-metastore-db:
+    image: quay.io/osclimate/postgresql-13:1-101
+    container_name: hive-metastore-db
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRESQL_ADMIN_PASSWORD=admin123$
+      - POSTGRESQL_DATABASE=hivemetadb
+      - POSTGRESQL_PASSWORD=hivemeta123$
+      - POSTGRESQL_USER=hive
+  casemgt-api:
+    image: quay.io/zagaos/zagaobserve-casemanage-backend:v6
+    container_name: casemgt-api
+    platform: linux/amd64
+    environment:
+      - name=value
+      - MINIO_ACCESS_KEY=minioAdmin
+      - POSTGRES_DB=hivemetadb
+      - POSTGRES_HOST=hive-metastore-db
+      - POSTGRES_PASSWORD=hivemeta123$
+      - POSTGRES_PORT=5432
+      - POSTGRES_USER=hive
+      - MINIO_SECRET_KEY=minio1234
+      - MINIO_BUCKET_NAME=attachments
+      - MINIO_ENDPOINT=minio:9000
+    ports:
+      - "8087:8000"
+    # depends_on:
+    #   - kafka
+    #   - trino
+    #   - minio
+    #   - hive-metastore-db
+    networks:
+        - anomaly-network
+
+
+  casemgt-web:
+    image: quay.io/zagaos/zagaobserve-casemanage-dashboard:v15 
+    container_name: casemgt-web
+    ports:
+      - "8086:8080"
+    volumes:
+      - ./casemgt-web/config.json:/usr/share/nginx/html/config/config.json
+    # depends_on:
+    #   - kafka
+    #   - trino
+    #   - minio
+    networks:
+        - anomaly-network
+  # order-srv-2:
 
     # depends_on:
     #   - redis

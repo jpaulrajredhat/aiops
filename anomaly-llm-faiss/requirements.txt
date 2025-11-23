@@ -1,3 +1,23 @@
+# fastapi
+# uvicorn
+# redis
+# kubernetes
+# sentence-transformers
+# transformers
+# # langchain
+# langchain==1.0.0
+# langchain-community
+# faiss-cpu
+# openshift==0.13.1
+# python-dotenv
+# tiktoken
+# #email-validator
+# openai
+# psutil
+# py-spy
+# ipython
+# httpx
+
 fastapi
 uvicorn
 redis
@@ -5,7 +25,9 @@ kubernetes
 sentence-transformers
 transformers
 langchain
+langchain-core
 langchain-community
+langchain-huggingface
 faiss-cpu
 openshift==0.13.1
 python-dotenv
